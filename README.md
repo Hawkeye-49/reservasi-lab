@@ -188,5 +188,5 @@ Jika belum ada akun admin, lakukan registrasi:
    - **Username**: `admin`
    - **Password**: `admin123` (minimal 6 karakter)
    - **Konfirmasi Password**: Sama dengan Password
-3. Klik **Buat Akun**
+3. Klik **Buat Akun Admin**
 4. Setelah berhasil, login dengan username & password yang tadi didaftarkan

@@ -1,0 +1,41 @@
+*{font-family:'Inter',sans-serif;box-sizing:border-box;}
+body{background:#f0f4f8;}
+:root{--navy:#0d1b2a;--navy2:#1b2838;--accent:#6366f1;--accent2:#4f46e5;--border:#e8ecf0;}
+.sidebar{width:240px;min-height:100vh;background:linear-gradient(180deg,var(--navy),var(--navy2));position:fixed;top:0;left:0;z-index:1000;transition:transform .3s;display:flex;flex-direction:column;}
+.sidebar-brand{padding:1.25rem;border-bottom:1px solid rgba(255,255,255,.08);}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:inline-flex;align-items:center;justify-content:center;}
+.nav-menu{padding:.5rem 0;flex:1;overflow-y:auto;}
+.nav-item-link{display:flex;align-items:center;gap:10px;padding:.65rem 1.1rem;color:rgba(255,255,255,.6);text-decoration:none;font-size:.83rem;font-weight:500;transition:all .2s;border-left:3px solid transparent;}
+.nav-item-link i{font-size:1rem;width:18px;flex-shrink:0;}
+.nav-item-link:hover,.nav-item-link.active{color:#fff;background:rgba(255,255,255,.08);border-left-color:var(--accent);}
+.nav-section-label{padding:.6rem 1.1rem .2rem;color:rgba(255,255,255,.28);font-size:.62rem;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;}
+.sidebar-overlay.show{display:block;}
+.main-content{margin-left:240px;min-height:100vh;transition:margin .3s;}
+.topbar{background:#fff;padding:.85rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.topbar-title{font-weight:700;color:var(--navy);font-size:1rem;}
+.content-area{padding:1.4rem;}
+.card{border:1px solid var(--border);border-radius:14px;background:#fff;}
+.card-header{background:#fff;border-bottom:1px solid var(--border);border-radius:14px 14px 0 0!important;padding:.9rem 1.1rem;}
+.stat-card{border:1px solid var(--border);border-radius:14px;background:#fff;padding:1.3rem;transition:transform .2s;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.08);}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.stat-num{font-size:1.8rem;font-weight:800;color:var(--navy);line-height:1;}
+.stat-label{color:#6c757d;font-size:.76rem;margin-top:3px;}
+.table th{font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:#6c757d;font-weight:700;white-space:nowrap;}
+.table td{font-size:.85rem;vertical-align:middle;}
+.badge{font-size:.73rem;padding:.3em .7em;border-radius:6px;}
+.form-label{font-size:.83rem;font-weight:600;color:var(--navy);margin-bottom:.4rem;}
+.form-control,.form-select{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:.88rem;background:#f8fafc;transition:border-color .2s,box-shadow .2s;}
+.form-control:focus,.form-select:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1);}
+.input-group-text{background:#f8fafc;border:1.5px solid var(--border);border-right:none;border-radius:10px 0 0 10px;color:#6c757d;}
+.input-group .form-control,.input-group .form-select{border-left:none;border-radius:0 10px 10px 0;}
+.btn-primary-custom{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;border-radius:10px;padding:.6rem 1.4rem;font-weight:700;font-size:.88rem;transition:all .3s;}
+.btn-primary-custom:hover{transform:translateY(-1px);box-shadow:0 5px 15px rgba(99,102,241,.35);color:#fff;}
+.btn-action{padding:.28rem .6rem;font-size:.78rem;border-radius:7px;}
+.table-responsive{border-radius:0 0 14px 14px;}
+.slot-btn{border:2px solid var(--border);border-radius:10px;padding:.55rem .8rem;cursor:pointer;transition:all .2s;background:#f8fafc;font-size:.82rem;text-align:center;}
+.slot-btn:hover:not(.booked){border-color:var(--accent);background:#ede9fe;}
+.slot-btn.selected{border-color:var(--accent);background:#ede9fe;font-weight:700;}
+.slot-btn.booked{opacity:.55;cursor:not-allowed;background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+@media(max-width:991px){.sidebar{transform:translateX(-100%);}.sidebar.show{transform:translateX(0);}.main-content{margin-left:0;}}

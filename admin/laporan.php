@@ -125,10 +125,10 @@ async function load(){
 function cetakLaporan(){
   const tbl=document.getElementById('tblLaporan').outerHTML;
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Laporan Reservasi</title>
+  w.document.write(`<!DOCTYPE html><html><head><title>Laporan Reservasi Lab Komputer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>body{padding:20px;}@media print{.no-print{display:none}}</style></head>
-    <body><h4>Laporan Penggunaan Laboratorium</h4><p>${dari} s/d ${ke}</p>${tbl}
+    <body><h4>Laporan Penggunaan Lab Komputer</h4><p>${dari} s/d ${ke}</p>${tbl}
     <script>window.onload=()=>window.print()<\/script></body></html>`);
 }
 load();

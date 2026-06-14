@@ -168,7 +168,7 @@ let step = 1;
     fetch(`${MAPI}?action=slot_waktu`).then(r=>r.json()),
   ]);
 
-  fillSelect('fMK', mk.data||[], d=>`${d.nama} (${d.kode}) – ${d.sks} SKS`, '-- Pilih Mata Kuliah --');
+  fillSelect('fMK', mk.data.filter(d => d.status === 'aktif') || [], d=>`${d.nama} (${d.kode}) – ${d.sks} SKS`, '-- Pilih Mata Kuliah --');
   fillSelect('fKelas', kl.data||[], d=>d.nama, '-- Pilih Kelas --');
   fillSelect('fRuangan', ru.data.filter(d=>d.status==='aktif')||[], d=>`${d.nama} (Kap. ${d.kapasitas})`, '-- Pilih Lab --');
 

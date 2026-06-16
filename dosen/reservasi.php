@@ -169,7 +169,7 @@ let step = 1;
   ]);
 
   fillSelect('fMK', mk.data.filter(d => d.status === 'aktif') || [], d=>`${d.nama} (${d.kode}) – ${d.sks} SKS`, '-- Pilih Mata Kuliah --');
-  fillSelect('fKelas', kl.data||[], d=>d.nama, '-- Pilih Kelas --');
+  fillSelect('fKelas', (kl.data || []).filter(d => d.status && d.status.toLowerCase() === 'aktif'), d=>d.nama, '-- Pilih Kelas --');
   fillSelect('fRuangan', ru.data.filter(d=>d.status==='aktif')||[], d=>`${d.nama} (Kap. ${d.kapasitas})`, '-- Pilih Lab --');
 
   document.getElementById('sesiInfo').innerHTML = (sl.data||[]).map(s=>`

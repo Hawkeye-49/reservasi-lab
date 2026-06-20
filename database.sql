@@ -83,6 +83,7 @@ CREATE TABLE reservasi (
     jurusan VARCHAR(50) DEFAULT 'Informatika',
     keterangan TEXT,
     status ENUM('pending','disetujui','ditolak','dibatalkan') DEFAULT 'pending',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
     catatan_admin VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -91,8 +92,9 @@ CREATE TABLE reservasi (
     FOREIGN KEY (matakuliah_id) REFERENCES matakuliah(id),
     FOREIGN KEY (kelas_id) REFERENCES kelas(id),
     FOREIGN KEY (slot_waktu_id) REFERENCES slot_waktu(id),
-    UNIQUE KEY unique_booking (ruangan_id, tanggal, slot_waktu_id)
+    UNIQUE KEY unique_booking_active (ruangan_id, tanggal, slot_waktu_id, is_active)
 ) ENGINE=InnoDB;
+
 
 INSERT INTO matakuliah (kode,nama,sks,jurusan) VALUES
 ('IF101','Analisis Algoritma',3,'Informatika'),

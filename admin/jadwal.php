@@ -37,7 +37,10 @@ async function load(){
   document.getElementById('tglInfo').textContent=`${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
   const gw=document.getElementById('gridWrap');
   gw.innerHTML='<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
-  if(d.getDay()===0){gw.innerHTML='<div class="text-center py-5 text-muted"><i class="bi bi-calendar-x display-5 d-block mb-2"></i>Tidak ada jadwal pada hari Minggu</div>';return;}
+  if(d.getDay() === 0 || d.getDay() === 6){
+    gw.innerHTML='<div class="text-center py-5 text-muted"><i class="bi bi-calendar-x display-5 d-block mb-2"></i>Tidak ada jadwal pada hari Sabtu/Minggu</div>';
+    return;
+  }
   const res=await fetch(`${API}?action=jadwal&tanggal=${tgl}`).then(r=>r.json());
   const {data=[],ruangan=[],slots=[]}=res;
   const lk={};data.forEach(b=>{lk[`${b.ruangan_id}_${b.sesi}`]=b;});

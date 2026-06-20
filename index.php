@@ -260,7 +260,7 @@ a{text-decoration:none;}
           <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#0099cc);border-radius:9px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-pc-display text-white"></i></div>
           <span style="color:#fff;font-weight:800;">SiResLab</span>
         </div>
-        <p style="font-size:.82rem;line-height:1.7;max-width:280px;">Sistem Reservasi Laboratorium Komputer untuk Universitas Cihuy – Gedung Laboratorium.</p>
+        <p style="font-size:.82rem;line-height:1.7;max-width:280px;">Sistem Reservasi Laboratorium Komputer untuk Universitas Cihuy.</p>
       </div>
       <div class="col-md-3">
         <div style="color:#fff;font-weight:700;margin-bottom:.8rem;font-size:.88rem;">Laboratorium</div>
@@ -311,8 +311,8 @@ async function loadJadwal() {
   const d = new Date(tgl+'T00:00:00');
   const wrap = document.getElementById('jadwalGrid');
   wrap.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
-  if (d.getDay()===0) {
-    wrap.innerHTML = '<div class="text-center py-5 text-muted"><i class="bi bi-calendar-x display-4 d-block mb-2"></i>Tidak ada jadwal pada hari Minggu</div>';
+  if (d.getDay()===0 || d.getDay()===6) {
+    wrap.innerHTML = '<div class="text-center py-5 text-muted"><i class="bi bi-calendar-x display-4 d-block mb-2"></i>Tidak ada jadwal pada hari Sabtu/Minggu</div>';
     return;
   }
   const res = await fetch(`${API_R}?action=jadwal&tanggal=${tgl}`).then(r=>r.json());

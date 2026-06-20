@@ -38,14 +38,11 @@ function slotStatus(PDO $db): void {
     $rid  = (int)($_GET['ruangan_id']??0);
     $tgl  = $_GET['tanggal']??'';
     if(!$rid||!$tgl) jsonRes(false,'parameter kurang');
-    $stmt = $db->prepare("SELECT sw.id,sw.sesi,sw.label,sw.jam_mulai,
-        (SELECT COUNT(*) FROM reservasi WHERE ruangan_id=? AND tanggal=? AND slot_waktu_id=sw.id AND status IN('pending','disetujui')) booked
-        FROM slot_waktu sw ORDER BY sw.sesi");
+    $stmt = $db->prepare("SELECT sw.id,sw.sesi,sw.label,sw.jam_mulai, (SELECT COUNT(*) FROM reservasi WHERE ruangan_id=? AND tanggal=? AND slot_waktu_id=sw.id AND is_active=1) booked FROM slot_waktu sw ORDER BY sw.sesi");
     $stmt->execute([$rid,$tgl]);
     $rows = $stmt->fetchAll();
 
 
-    // jika tanggal hari ini, tandai slot yang sudah lewat sebagai booked agar UI disable
     if($tgl === date('Y-m-d')) {
         foreach($rows as &$r) {
             $waktuMulai = strtotime($tgl.' '.$r['jam_mulai']);
@@ -68,7 +65,7 @@ function slotStatus(PDO $db): void {
 // jadwal
 function jadwal(PDO $db): void {
     $tgl = $_GET['tanggal'] ?? date('Y-m-d');
-    $stmt = $db->prepare(baseQuery()." WHERE r.tanggal=? AND r.status IN('pending','disetujui') ORDER BY sw.sesi");
+    $stmt = $db->prepare(baseQuery()." WHERE r.tanggal=? AND r.is_active=1 ORDER BY sw.sesi");
     $stmt->execute([$tgl]);
     $data = $stmt->fetchAll();
     $ruangan = $db->query("SELECT id,kode,nama FROM ruangan WHERE status='aktif' ORDER BY nama")->fetchAll();
@@ -99,8 +96,8 @@ function listReservasi(PDO $db): void {
 
 // detail reservasi
 function detail(PDO $db): void {
-    $id  = (int)($_GET['id']??0);
-    $kode= $_GET['kode']??'';
+    $id = (int)($_GET['id']??0);
+    $kode = $_GET['kode']??'';
     $col = $id ? 'r.id' : 'r.kode_reservasi';
     $val = $id ?: $kode;
     if(!$val) jsonRes(false,'parameter kurang');
@@ -113,22 +110,22 @@ function detail(PDO $db): void {
 
 // statistik
 function statistik(PDO $db): void {
-    $total   =$db->query("SELECT COUNT(*) FROM reservasi")->fetchColumn();
+    $total =$db->query("SELECT COUNT(*) FROM reservasi")->fetchColumn();
     $pending =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='pending'")->fetchColumn();
-    $setuju  =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='disetujui'")->fetchColumn();
-    $tolak   =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='ditolak'")->fetchColumn();
-    $batal   =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='dibatalkan'")->fetchColumn();
+    $setuju =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='disetujui'")->fetchColumn();
+    $tolak =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='ditolak'")->fetchColumn();
+    $batal =$db->query("SELECT COUNT(*) FROM reservasi WHERE status='dibatalkan'")->fetchColumn();
     $hariIni =$db->query("SELECT COUNT(*) FROM reservasi WHERE tanggal=CURDATE() AND status='disetujui'")->fetchColumn();
-    $bulanIni=$db->query("SELECT COUNT(*) FROM reservasi WHERE MONTH(tanggal)=MONTH(CURDATE()) AND YEAR(tanggal)=YEAR(CURDATE())")->fetchColumn();
+    $bulanIni =$db->query("SELECT COUNT(*) FROM reservasi WHERE MONTH(tanggal)=MONTH(CURDATE()) AND YEAR(tanggal)=YEAR(CURDATE())")->fetchColumn();
     $ruangan =$db->query("SELECT ru.nama,COUNT(*) n FROM reservasi r JOIN ruangan ru ON r.ruangan_id=ru.id GROUP BY ru.id ORDER BY n DESC")->fetchAll();
-    $trend   =$db->query("SELECT DATE_FORMAT(tanggal,'%Y-%m') bln,COUNT(*) n FROM reservasi WHERE tanggal>=DATE_SUB(CURDATE(),INTERVAL 5 MONTH) GROUP BY bln ORDER BY bln")->fetchAll();
+    $trend =$db->query("SELECT DATE_FORMAT(tanggal,'%Y-%m') bln,COUNT(*) n FROM reservasi WHERE tanggal>=DATE_SUB(CURDATE(),INTERVAL 5 MONTH) GROUP BY bln ORDER BY bln")->fetchAll();
     jsonRes(true,'ok',['data'=>compact('total','pending','setuju','tolak','batal','hariIni','bulanIni','ruangan','trend')]);
 }
 
 // laporan
 function laporan(PDO $db): void {
     $dari = $_GET['dari'] ?? date('Y-m-01');
-    $ke   = $_GET['ke']   ?? date('Y-m-t');
+    $ke = $_GET['ke']   ?? date('Y-m-t');
     $stmt = $db->prepare(baseQuery()." WHERE r.tanggal BETWEEN ? AND ? ORDER BY r.tanggal,sw.sesi");
     $stmt->execute([$dari,$ke]);
     $data = $stmt->fetchAll();
@@ -142,41 +139,19 @@ function laporan(PDO $db): void {
 // buat reservasi
 function buat(PDO $db): void {
     $in = json_decode(file_get_contents('php://input'),true) ?? $_POST;
-    $did  =(int)($in['dosen_id']??0);
-    $rid  =(int)($in['ruangan_id']??0);
+    $did =(int)($in['dosen_id']??0);
+    $rid =(int)($in['ruangan_id']??0);
     $mkid =(int)($in['matakuliah_id']??0);
     $klid =(int)($in['kelas_id']??0);
     $slid =(int)($in['slot_waktu_id']??0);
-    $tgl  = sanitize($in['tanggal']??'');
-    $ket  = sanitize($in['keterangan']??'');
+    $tgl = sanitize($in['tanggal']??'');
+    $ket = sanitize($in['keterangan']??'');
 
     if(!$did||!$rid||!$mkid||!$klid||!$slid||!$tgl) jsonRes(false,'Semua field wajib diisi');
-    $tglTime = strtotime($tgl);
-    if($tglTime < strtotime('today')) jsonRes(false,'Tanggal tidak boleh masa lalu');
-    $dayNum = (int)date('N', $tglTime);
-    if($dayNum >= 6) {
-        jsonRes(false,'Tidak tersedia pada hari Sabtu/Minggu');
-    }
-
-    // disable reservasi untuk slot yang sudah lewat (terutama untuk tanggal hari ini)
-    $today = date('Y-m-d');
-    if($tgl === $today) {
-        $sw = $db->prepare("SELECT jam_mulai FROM slot_waktu WHERE id=?");
-        $sw->execute([$slid]);
-        $slot = $sw->fetch();
-        if(!$slot) jsonRes(false,'Slot waktu tidak ditemukan');
-        $waktuMulai = strtotime($tgl.' '.$slot['jam_mulai']);
-        if($waktuMulai <= time()) jsonRes(false,'Sesi sudah lewat, pilih sesi lain');
-    }
-
-    $cek=$db->prepare("SELECT id FROM reservasi WHERE ruangan_id=? AND tanggal=? AND slot_waktu_id=? AND status IN('pending','disetujui')");
-    $cek->execute([$rid,$tgl,$slid]);
-    if($cek->fetch()) jsonRes(false,'Ruangan sudah dipesan pada waktu tersebut');
 
     try {
         $kode = generateKode();
-        $db->prepare("INSERT INTO reservasi(kode_reservasi,dosen_id,ruangan_id,matakuliah_id,kelas_id,slot_waktu_id,tanggal,jurusan,keterangan,status)
-                      VALUES(?,?,?,?,?,?,?,'Informatika',?,'pending')")
+        $db->prepare("INSERT INTO reservasi(kode_reservasi,dosen_id,ruangan_id,matakuliah_id,kelas_id,slot_waktu_id,tanggal,jurusan,keterangan,status,is_active) VALUES(?,?,?,?,?,?,?,'Informatika',?,'pending',1)")
            ->execute([$kode,$did,$rid,$mkid,$klid,$slid,$tgl,$ket]);
         jsonRes(true,'Reservasi berhasil diajukan! Menunggu persetujuan admin.',['kode'=>$kode,'id'=>(int)$db->lastInsertId()]);
     } catch(PDOException $e){
@@ -189,18 +164,19 @@ function buat(PDO $db): void {
 function updateStatus(PDO $db): void {
     if(!isAdmin()) jsonRes(false,'Akses ditolak');
     $in = json_decode(file_get_contents('php://input'),true) ?? $_POST;
-    $id     = (int)($in['id']??0);
+    $id = (int)($in['id']??0);
     $status = sanitize($in['status']??'');
-    $catatan= sanitize($in['catatan']??'');
+    $catatan = sanitize($in['catatan']??'');
     if(!$id||!in_array($status,['disetujui','ditolak','dibatalkan'])) jsonRes(false,'Parameter tidak valid');
-    $db->prepare("UPDATE reservasi SET status=?,catatan_admin=? WHERE id=?")->execute([$status,$catatan,$id]);
+    $isActive = in_array($status, ['pending','disetujui'], true) ? 1 : 0;
+    $db->prepare("UPDATE reservasi SET status=?,catatan_admin=?,is_active=? WHERE id=?")->execute([$status,$catatan,$isActive,$id]);
     jsonRes(true,"Reservasi berhasil $status");
 }
 
 // batalkan reservasi (dosen)
 function batalkan(PDO $db): void {
     $in = json_decode(file_get_contents('php://input'),true) ?? $_POST;
-    $id  = (int)($in['id']??0);
+    $id = (int)($in['id']??0);
     $did = (int)($in['dosen_id']??$_SESSION['dosen_id']??0);
     if(!$id) jsonRes(false,'ID tidak valid');
     $row=$db->prepare("SELECT id,status,dosen_id,tanggal,slot_waktu_id FROM reservasi WHERE id=?");
@@ -214,6 +190,6 @@ function batalkan(PDO $db): void {
     $slot=$sw->fetch();
     $waktuMulai = strtotime($r['tanggal'].' '.$slot['jam_mulai']);
     if($waktuMulai - time() < 7200 && !isAdmin()) jsonRes(false,'Pembatalan hanya bisa dilakukan minimal 2 jam sebelum sesi');
-    $db->prepare("UPDATE reservasi SET status='dibatalkan' WHERE id=?")->execute([$id]);
+    $db->prepare("UPDATE reservasi SET status='dibatalkan',is_active=0 WHERE id=?")->execute([$id]);
     jsonRes(true,'Reservasi berhasil dibatalkan');
 }

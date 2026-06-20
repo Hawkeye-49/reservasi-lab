@@ -169,8 +169,8 @@ let step = 1;
   ]);
 
   fillSelect('fMK', mk.data.filter(d => d.status === 'aktif') || [], d=>`${d.nama} (${d.kode}) – ${d.sks} SKS`, '-- Pilih Mata Kuliah --');
-  fillSelect('fKelas', (kl.data || []).filter(d => d.status && d.status.toLowerCase() === 'aktif'), d=>d.nama, '-- Pilih Kelas --');
-  fillSelect('fRuangan', ru.data.filter(d=>d.status==='aktif')||[], d=>`${d.nama} (Kap. ${d.kapasitas})`, '-- Pilih Lab --');
+  fillSelect('fKelas', (kl.data || []).filter(d => d.status && d.status.toLowerCase() === 'aktif'), d=>`${d.nama} (Kap. ${d.kapasitas})`, '-- Pilih Kelas --');
+  fillSelect('fRuangan', ru.data.filter(d => d.status === 'aktif') || [], d=>`${d.nama} (Kap. ${d.kapasitas})`, '-- Pilih Lab --');
 
   document.getElementById('sesiInfo').innerHTML = (sl.data||[]).map(s=>`
     <div class="d-flex justify-content-between py-1" style="border-bottom:1px solid #f0f4f8;font-size:.82rem;">
@@ -187,10 +187,28 @@ function fillSelect(id, data, labelFn, placeholder) {
     data.map(d=>`<option value="${d.id}">${typeof labelFn==='function'?labelFn(d):d[labelFn]}</option>`).join('');
 }
 
+function isWeekend(tgl) {
+  const day = new Date(tgl + 'T00:00:00').getDay();
+  return day === 0 || day === 6;
+}
+
+function renderWeekendSlotBlock() {
+  document.getElementById('slotGrid').innerHTML = `
+    <div class="col-12">
+      <div class="d-flex align-items-center justify-content-center gap-2 p-3 rounded-3"
+          style="background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;">
+        <i class="bi bi-calendar-x fs-5"></i>
+        <span>Tidak tersedia hari Sabtu/Minggu</span>
+      </div>
+    </div>
+  `;
+}
+
 // ruangan change
 function onRuanganChange() {
   const rid = document.getElementById('fRuangan').value;
   if (!rid) return;
+
   const sel = document.getElementById('fRuangan');
   const txt = sel.options[sel.selectedIndex].text;
   document.getElementById('ruanganInfo').classList.remove('d-none');
@@ -198,22 +216,33 @@ function onRuanganChange() {
     `<div class="p-2 rounded-3" style="background:#ede9fe;font-size:.82rem;color:#4f46e5;">
        <i class="bi bi-building me-2"></i>${txt}
      </div>`;
+
+  const tgl = document.getElementById('fTgl').value;
+  if (tgl && isWeekend(tgl)) {
+    showAlert('warning', 'Reservasi tidak tersedia pada hari Sabtu/Minggu.');
+    renderWeekendSlotBlock();
+    return;
+  }
+
+  // non-weekend -> load slots
+  document.getElementById('alertArea').innerHTML = '';
   loadSlots();
 }
 
 function onTglChange() {
   const tgl = document.getElementById('fTgl').value;
   if (!tgl) return;
-  const day = new Date(tgl + 'T00:00:00').getDay();
-  if (day === 0 || day === 6) {
+
+  if (isWeekend(tgl)) {
     showAlert('warning', 'Reservasi tidak tersedia pada hari Sabtu/Minggu.');
-    document.getElementById('slotGrid').innerHTML =
-      '<div class="col-12 text-muted" style="font-size:.85rem;"><i class="bi bi-calendar-x me-1"></i>Tidak tersedia hari Sabtu/Minggu</div>';
+    renderWeekendSlotBlock();
     return;
   }
+
   document.getElementById('alertArea').innerHTML = '';
   if (document.getElementById('fRuangan').value) loadSlots();
 }
+
 
 async function loadSlots() {
   const rid = document.getElementById('fRuangan').value;
@@ -262,6 +291,23 @@ function goStep(next) {
     const rid = document.getElementById('fRuangan').value;
     const tgl = document.getElementById('fTgl').value;
     if (!rid || !tgl || !selSlotId) { showAlert('danger','Pilih ruangan, tanggal, dan sesi waktu!'); return; }
+
+    if (isWeekend(tgl)) {
+      showAlert('warning', 'Reservasi tidak tersedia pada hari Sabtu/Minggu.');
+      renderWeekendSlotBlock();
+      return;
+    }
+
+    const ruTxt = document.getElementById('fRuangan').selectedOptions[0]?.textContent || '';
+    const ruCap = parseInt((ruTxt.match(/Kap\.\s*(\d+)/i) || [,''])[1], 10);
+    const klTxt = document.getElementById('fKelas').selectedOptions[0]?.textContent || '';
+    const klCap = parseInt((klTxt.match(/Kap\.\s*(\d+)/i) || [,''])[1], 10);
+
+    if (!Number.isNaN(ruCap) && !Number.isNaN(klCap) && ruCap < klCap) {
+      showAlert('danger', 'Kapasitas ruangan tidak mencukupi untuk kapasitas kelas');
+      return;
+    }
+
     buildKonfirmasi();
   }
   step = next;
@@ -273,6 +319,7 @@ function goStep(next) {
     el.style.color = i <= next ? '#fff' : '#aaa';
   });
 }
+
 
 function buildKonfirmasi() {
   const mkSel = document.getElementById('fMK');

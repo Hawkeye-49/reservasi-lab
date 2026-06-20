@@ -117,14 +117,7 @@ sudo /Applications/XAMPP/xamppfiles/bin/apachectl start
 
 1. Klik **Database** di laragon, lalu **Open**
 
-2. Klik kanan **Laragon.MySQL** di sidebar kiri
-
-3. Pilih **Create new** -> Database
-   - Isi nama: `reservasi_lab`
-   - Collation: `utf8mb4_unicode_ci`
-   - Klik **Ok**
-
-4. Pilih database yang sudah dibuat, Lalu Klik menu **File** -> **Run SQL file...**
+2. Klik **Laragon.MySQL** di sidebar kiri, lalu klik menu **File** -> **Run SQL file...**
    - Pilih database `database.sql` yang ada di folder project yang sudah diekstrak
    - Klik **Yes**
 
@@ -139,7 +132,7 @@ Database `reservasi_lab` akan otomatis membuat tabel berikut:
 | `admin` | Data administrator system |
 | `dosen` | Data dosen dan akun login |
 | `matakuliah` | Data mata kuliah |
-| `kelas` | Data kelas/rombongan belajar |
+| `kelas` | Data kelas |
 | `ruangan` | Data ruangan laboratorium |
 | `slot_waktu` | Jadwal time slot untuk reservasi |
 | `reservasi` | Data reservasi ruangan |

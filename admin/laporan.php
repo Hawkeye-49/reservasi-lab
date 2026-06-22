@@ -122,14 +122,9 @@ async function load(){
     </tr>`).join(''):'<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data untuk periode ini</td></tr>';
 }
 
-function cetakLaporan(){
-  const tbl=document.getElementById('tblLaporan').outerHTML;
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Laporan Reservasi Lab Komputer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>body{padding:20px;}@media print{.no-print{display:none}}</style></head>
-    <body><h4>Laporan Penggunaan Lab Komputer</h4><p>${dari} s/d ${ke}</p>${tbl}
-    <script>window.onload=()=>window.print()<\/script></body></html>`);
+function cetakLaporan() {
+    window.location.href =
+        `laporan_pdf.php?dari=${encodeURIComponent(dari)}&ke=${encodeURIComponent(ke)}`;
 }
 load();
 </script>

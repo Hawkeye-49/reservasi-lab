@@ -5,8 +5,8 @@ requireAdmin(); $cur=basename(__FILE__);
 $dari = $_GET['dari'] ?? date('Y-m-01');
 $ke   = $_GET['ke']   ?? date('Y-m-t');
 ?>
-<?= adminHead('Laporan Penggunaan') ?><?= adminSidebar($cur) ?>
-<div class="main-content"><?= adminTopbar('Laporan Penggunaan Lab') ?>
+<?= adminHead('Laporan Reservasi') ?><?= adminSidebar($cur) ?>
+<div class="main-content"><?= adminTopbar('Laporan Reservasi Lab') ?>
 <div class="content-area">
 
 <!-- filter -->
@@ -23,7 +23,8 @@ $ke   = $_GET['ke']   ?? date('Y-m-t');
       </div>
       <div class="col-sm-4 d-flex gap-1">
         <button type="submit" class="btn btn-sm btn-primary-custom flex-fill"><i class="bi bi-filter me-1"></i>Filter</button>
-        <button type="button" class="btn btn-sm btn-outline-success" onclick="cetakLaporan()"><i class="bi bi-printer me-1"></i>Cetak</button>
+        <button type="button" class="btn btn-sm btn-outline-success" onclick="cetakLaporanPDF()"><i class="bi bi-printer me-1"></i>PDF</button>
+        <button type="button" class="btn btn-sm btn-outline-success" onclick="cetakLaporanExcel()"><i class="bi bi-file-earmark-excel-fill me-1"></i>Excel</button>
       </div>
     </form>
   </div>
@@ -36,13 +37,13 @@ $ke   = $_GET['ke']   ?? date('Y-m-t');
 <div class="row g-3 mb-3">
   <div class="col-lg-6">
     <div class="card p-3">
-      <h6 class="fw-bold mb-3"><i class="bi bi-building me-2 text-primary"></i>Penggunaan per Ruangan</h6>
+      <h6 class="fw-bold mb-3"><i class="bi bi-building me-2 text-primary"></i>Reservasi per Ruangan</h6>
       <div id="chartRuangan"></div>
     </div>
   </div>
   <div class="col-lg-6">
     <div class="card p-3">
-      <h6 class="fw-bold mb-3"><i class="bi bi-person-badge me-2 text-primary"></i>Top 10 Dosen Pengguna</h6>
+      <h6 class="fw-bold mb-3"><i class="bi bi-person-badge me-2 text-primary"></i>Top 10 Dosen Reservasi</h6>
       <div id="chartDosen"></div>
     </div>
   </div>
@@ -122,9 +123,14 @@ async function load(){
     </tr>`).join(''):'<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data untuk periode ini</td></tr>';
 }
 
-function cetakLaporan() {
+function cetakLaporanPDF() {
     window.location.href =
         `laporan_pdf.php?dari=${encodeURIComponent(dari)}&ke=${encodeURIComponent(ke)}`;
+}
+
+function cetakLaporanExcel() {
+    window.location.href =
+        `laporan_excel.php?dari=${encodeURIComponent(dari)}&ke=${encodeURIComponent(ke)}`;
 }
 load();
 </script>

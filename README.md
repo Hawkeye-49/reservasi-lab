@@ -7,15 +7,17 @@
 ## Fitur Utama
 
 ### Admin
+
 - **Dashboard** - Monitoring reservasi dan statistik
 - **Manajemen Dosen** - Tambah, edit, hapus data dosen
 - **Manajemen Mata Kuliah** - Kelola data mata kuliah
 - **Manajemen Kelas** - Data kelas dan semester
 - **Manajemen Ruangan** - Data ruangan lab beserta fasilitas
 - **Verifikasi Reservasi** - Terima/tolak permintaan reservasi
-- **Laporan** - Cetak laporan reservasi per periode
+- **Laporan Reservasi** - Melihat dan Cetak laporan reservasi per periode
 
 ### Dosen
+
 - **Dashboard** - Ringkasan reservasi pribadi
 - **Reservasi Ruangan** - Buat permintaan reservasi baru
 - **Lihat Jadwal** - Melihat jadwal ruangan lab
@@ -27,11 +29,13 @@
 ## Persyaratan Sistem
 
 ### Recommended:
+
 - PHP 8.0+
 - MySQL 8.0+
 - Laragon atau XAMPP (untuk development)
 
 ### Perangkat yang Diperlukan:
+
 - Windows/Linux/macOS
 - RAM minimal 2GB
 - Koneksi internet stabil
@@ -56,12 +60,14 @@
 #### Langkah 2: Jalankan XAMPP
 
 **Windows:**
+
 1. Buka **XAMPP Control Panel**
 2. Klik **Start** untuk Apache
 3. Klik **Start** untuk MySQL
 4. Pastikan kedua layanan berjalan (hijau)
 
 **Linux:**
+
 ```bash
 sudo /opt/lampp/manager-linux.run
 # atau via terminal:
@@ -69,6 +75,7 @@ sudo /opt/lampp/lampp start
 ```
 
 **Mac:**
+
 ```bash
 sudo /Applications/XAMPP/xamppfiles/bin/apachectl start
 ```
@@ -78,7 +85,7 @@ sudo /Applications/XAMPP/xamppfiles/bin/apachectl start
 1. Buka **phpMyAdmin**: http://localhost/phpmyadmin
 2. Login dengan:
    - Username: `root`
-   - Password: *(kosong)*
+   - Password: _(kosong)_
 
 3. **Buat Database Baru:**
    - Klik tab **Databases**
@@ -105,7 +112,7 @@ sudo /Applications/XAMPP/xamppfiles/bin/apachectl start
    ```
    C:\laragon\www\reservasi-lab
    ```
-   *(Sesuaikan path instalasi Laragon Anda)*
+   _(Sesuaikan path instalasi Laragon Anda)_
 
 #### Langkah 2: Jalankan Laragon
 
@@ -127,15 +134,15 @@ sudo /Applications/XAMPP/xamppfiles/bin/apachectl start
 
 Database `reservasi_lab` akan otomatis membuat tabel berikut:
 
-| Tabel | Deskripsi |
-|-------|-----------|
-| `admin` | Data administrator system |
-| `dosen` | Data dosen dan akun login |
-| `matakuliah` | Data mata kuliah |
-| `kelas` | Data kelas |
-| `ruangan` | Data ruangan laboratorium |
+| Tabel        | Deskripsi                        |
+| ------------ | -------------------------------- |
+| `admin`      | Data administrator system        |
+| `dosen`      | Data dosen dan akun login        |
+| `matakuliah` | Data mata kuliah                 |
+| `kelas`      | Data kelas                       |
+| `ruangan`    | Data ruangan laboratorium        |
 | `slot_waktu` | Jadwal time slot untuk reservasi |
-| `reservasi` | Data reservasi ruangan |
+| `reservasi`  | Data reservasi ruangan           |
 
 ---
 
@@ -148,6 +155,7 @@ http://localhost/reservasi-lab/
 ```
 
 Jika XAMPP installed di path berbeda, sesuaikan URL:
+
 ```
 http://localhost/[folder-name]/
 ```

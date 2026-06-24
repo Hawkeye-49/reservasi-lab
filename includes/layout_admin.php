@@ -39,7 +39,7 @@ function adminSidebar(string $cur): string {
         ['href'=>'dashboard.php','icon'=>'bi-grid-1x2-fill','label'=>'Dashboard'],
         ['href'=>'reservasi.php','icon'=>'bi-calendar-check-fill','label'=>'Kelola Reservasi'],
         ['href'=>'jadwal.php','icon'=>'bi-table','label'=>'Jadwal Ruangan'],
-        ['href'=>'laporan.php','icon'=>'bi-bar-chart-fill','label'=>'Laporan Penggunaan'],
+        ['href'=>'laporan.php','icon'=>'bi-bar-chart-fill','label'=>'Laporan Reservasi'],
         ['section'=>'Master Data'],
         ['href'=>'dosen.php','icon'=>'bi-person-badge-fill','label'=>'Data Dosen'],
         ['href'=>'matakuliah.php','icon'=>'bi-book-fill','label'=>'Mata Kuliah'],

@@ -33,7 +33,7 @@ $stmt->execute([$dari,$ke]);
 $data = $stmt->fetchAll();
 
 $html = '
-<h2 style="text-align:center;">Laporan Penggunaan Laboratorium Komputer</h2>
+<h2 style="text-align:center;">Laporan Reservasi Laboratorium Komputer</h2>
 <p>Periode '.$dari.' s/d '.$ke.'</p>
 
 <table border="1" width="100%" cellpadding="5" cellspacing="0">
@@ -74,6 +74,6 @@ $mpdf = new \Mpdf\Mpdf([
 $mpdf->WriteHTML($html);
 
 $mpdf->Output(
-    'laporan_penggunaan_lab_'.date('Ymd_His').'.pdf',
+    'laporan_reservasi_lab_'.date('Ymd_His').'.pdf',
     \Mpdf\Output\Destination::DOWNLOAD
 );

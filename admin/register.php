@@ -22,8 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $db = getDB();
-
-            // cek username unik
             $stmt = $db->prepare('SELECT id FROM admin WHERE username=?');
             $stmt->execute([$username]);
             if ($stmt->fetch()) {

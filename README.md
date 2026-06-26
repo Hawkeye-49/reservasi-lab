@@ -184,10 +184,10 @@ Jika belum ada akun admin, lakukan registrasi:
 
 1. Di halaman login admin, klik **Register Admin** di bagian bawah
 2. Isi form (contoh):
-   - **Nama**: `Admin` (minimal 5 karakter)
+   - **Nama**: `Admin`
    - **Email**: `admin@lab.id`
    - **Username**: `admin`
-   - **Password**: `admin123` (minimal 6 karakter)
+   - **Password**: `admin123` (minimal 8 karakter)
    - **Konfirmasi Password**: Sama dengan Password
 3. Klik **Buat Akun Admin**
 4. Setelah berhasil, login dengan username & password yang tadi didaftarkan

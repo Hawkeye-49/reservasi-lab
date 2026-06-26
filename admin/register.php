@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $err = 'Nama, username, dan password wajib diisi!';
     } elseif ($p !== $cp) {
         $err = 'Konfirmasi password tidak sama!';
-    } elseif (strlen($p) < 6) {
-        $err = 'Password minimal 6 karakter!';
+    } elseif (strlen($p) < 8) {
+        $err = 'Password minimal 8 karakter!';
     } else {
         try {
             $db = getDB();

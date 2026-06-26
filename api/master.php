@@ -39,6 +39,7 @@ function saveDosen(PDO $db): void {
     $stat = inp('status') ?: 'aktif';
     $pass = inp('password');
     if(!$nidn||!$nama||!$email) jsonRes(false,'NIDN, nama, email wajib diisi');
+    if($pass && strlen($pass) < 8) jsonRes(false,'Password minimal 8 karakter');
     if($id){
         if($pass){
             $hash = password_hash($pass, PASSWORD_BCRYPT);

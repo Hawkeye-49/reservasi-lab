@@ -1,6 +1,4 @@
 <?php
-// Shared HTML head + sidebar untuk semua halaman admin
-// Usage: require_once '../includes/layout_admin.php'; // lalu echo adminHead($title); echo adminSidebar($current);
 function adminHead(string $title): string {
     return '<!DOCTYPE html>
 <html lang="id">

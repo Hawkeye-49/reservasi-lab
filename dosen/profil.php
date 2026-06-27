@@ -138,7 +138,7 @@ $stat = $stat->fetch();
             </div>
             <div class="col-md-6">
               <label class="form-label">Password Baru <span class="text-danger">*</span></label>
-              <input type="password" name="password_baru" class="form-control" placeholder="Minimal 6 karakter" required>
+              <input type="password" name="password_baru" class="form-control" placeholder="Minimal 8 karakter" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>

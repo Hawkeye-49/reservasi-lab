@@ -61,7 +61,6 @@ function slotStatus(PDO $db): void {
     jsonRes(true,'ok',['data'=>$rows]);
 }
 
-
 // jadwal
 function jadwal(PDO $db): void {
     $tgl = $_GET['tanggal'] ?? date('Y-m-d');

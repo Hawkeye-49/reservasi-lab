@@ -76,7 +76,6 @@ async function load(){
   const pr=res.per_ruangan||[];
   const pd=res.per_dosen||[];
 
-  // stat cards
   const setuju=data.filter(d=>d.status==='disetujui').length;
   const pending=data.filter(d=>d.status==='pending').length;
   const ditolak=data.filter(d=>d.status==='ditolak').length;
@@ -91,7 +90,6 @@ async function load(){
         <div class="stat-icon" style="background:${s[3]};color:${s[4]}"><i class="bi ${s[2]}"></i></div>
       </div></div></div>`).join('');
 
-  // chart ruangan (bar manual)
   const maxR=pr.reduce((m,x)=>Math.max(m,+x.n),0)||1;
   document.getElementById('chartRuangan').innerHTML=pr.map(x=>`
     <div class="mb-2">
@@ -106,7 +104,6 @@ async function load(){
       <div style="background:#f0f4f8;border-radius:6px;height:10px;"><div style="height:10px;border-radius:6px;background:linear-gradient(135deg,#6366f1,#4f46e5);width:${(x.n/maxD*100).toFixed(1)}%;"></div></div>
     </div>`).join('')||'<div class="text-muted text-center py-3">Tidak ada data</div>';
 
-  // table
   document.getElementById('totalBadge').textContent=data.length;
   const bmap={pending:'bg-warning text-dark',disetujui:'bg-success',ditolak:'bg-danger',dibatalkan:'bg-secondary'};
   document.getElementById('tbody').innerHTML=data.length?data.map((d,i)=>`

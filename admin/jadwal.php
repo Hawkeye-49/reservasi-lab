@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const t=new Date().toISOString().split('T')[0];
   document.getElementById('tgl').value=t; load();
 });
+
 async function load(){
   const tgl=document.getElementById('tgl').value;
   const d=new Date(tgl+'T00:00:00');

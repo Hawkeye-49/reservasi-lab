@@ -44,6 +44,7 @@ function adminSidebar(string $cur): string {
         ['href'=>'kelas.php','icon'=>'bi-people-fill','label'=>'Data Kelas'],
         ['href'=>'ruangan.php','icon'=>'bi-building-fill','label'=>'Laboratorium'],
         ['section'=>'Akun'],
+        ['href' =>'profil.php','icon'=>'bi-person-circle','label'=>'Profil Saya'],
         ['href'=>'logout.php','icon'=>'bi-box-arrow-left','label'=>'Logout','danger'=>true],
     ];
     $html = '<div class="sidebar" id="sidebar">

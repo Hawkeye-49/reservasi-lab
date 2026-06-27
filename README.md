@@ -15,6 +15,7 @@
 - **Manajemen Ruangan** - Data ruangan lab beserta fasilitas
 - **Verifikasi Reservasi** - Terima/tolak permintaan reservasi
 - **Laporan Reservasi** - Melihat dan Cetak laporan reservasi per periode
+- **Update Profil** - Perbarui data diri
 
 ### Dosen
 

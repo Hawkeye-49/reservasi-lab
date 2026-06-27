@@ -204,7 +204,6 @@ function renderWeekendSlotBlock() {
   `;
 }
 
-// ruangan change
 function onRuanganChange() {
   const rid = document.getElementById('fRuangan').value;
   if (!rid) return;
@@ -224,7 +223,6 @@ function onRuanganChange() {
     return;
   }
 
-  // non-weekend -> load slots
   document.getElementById('alertArea').innerHTML = '';
   loadSlots();
 }

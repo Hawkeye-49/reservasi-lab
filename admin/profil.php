@@ -1,9 +1,9 @@
 <?php
 require_once '../includes/config.php';
-require_once '../includes/layout_dosen.php';
-requireDosen();
+require_once '../includes/layout_admin.php';
+requireAdmin();
 $cur = basename(__FILE__);
-$did = (int)$_SESSION['dosen_id'];
+$did = (int)$_SESSION['admin_id'];
 $db  = getDB();
 
 $msg = $err = '';
@@ -11,50 +11,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'update_profil') {
         $nama = sanitize($_POST['nama'] ?? '');
-        $hp   = sanitize($_POST['no_hp'] ?? '');
+        $user = sanitize($_POST['username'] ?? '');
         if (!$nama) { $err = 'Nama tidak boleh kosong.'; }
-        else {
-            $db->prepare("UPDATE dosen SET nama=?, no_hp=? WHERE id=?")
-               ->execute([$nama, $hp, $did]);
-            $_SESSION['dosen_nama'] = $nama;
+        if (!$user) { $err = 'Username tidak boleh kosong.'; }
+        if (!$err) {
+            $stmt = $db->prepare("SELECT id FROM admin WHERE username=? AND id<>?");
+            $stmt->execute([$user, $did]);
+            if ($stmt->fetch()) {
+                $err = 'Username sudah digunakan oleh admin lain.';
+            }
+        }
+        if (!$err) {
+            $db->prepare("UPDATE admin SET nama=?, username=? WHERE id=?")
+               ->execute([$nama, $user, $did]);
+            $_SESSION['admin_nama'] = $nama;
             $msg = 'Profil berhasil diperbarui!';
         }
     } elseif ($action === 'ganti_password') {
         $lama = $_POST['password_lama'] ?? '';
         $baru = $_POST['password_baru'] ?? '';
         $konfirm = $_POST['password_konfirm'] ?? '';
-        $row = $db->prepare("SELECT password FROM dosen WHERE id=?");
+        $row = $db->prepare("SELECT password FROM admin WHERE id=?");
         $row->execute([$did]);
         $hash = $row->fetchColumn();
-        if (!password_verify($lama, $hash)) {
+        if (!$hash || !password_verify($lama, $hash)) {
             $err = 'Password lama salah.';
-        } elseif (strlen($baru) < 8) {
-            $err = 'Password baru minimal 8 karakter.';
+        } elseif (strlen($baru) < 6) {
+            $err = 'Password baru minimal 6 karakter.';
         } elseif ($baru !== $konfirm) {
             $err = 'Konfirmasi password tidak cocok.';
         } else {
-            $db->prepare("UPDATE dosen SET password=? WHERE id=?")
+            $db->prepare("UPDATE admin SET password=? WHERE id=?")
                ->execute([password_hash($baru, PASSWORD_BCRYPT), $did]);
             $msg = 'Password berhasil diubah!';
         }
     }
 }
 
-$dosen = $db->prepare("SELECT * FROM dosen WHERE id=?");
-$dosen->execute([$did]);
-$dosen = $dosen->fetch();
-
-$stat = $db->prepare("SELECT
-    (SELECT COUNT(*) FROM reservasi WHERE dosen_id=?) total,
-    (SELECT COUNT(*) FROM reservasi WHERE dosen_id=? AND status='disetujui') disetujui,
-    (SELECT COUNT(*) FROM reservasi WHERE dosen_id=? AND status='pending') pending");
-$stat->execute([$did,$did,$did]);
-$stat = $stat->fetch();
+$admin = $db->prepare("SELECT * FROM admin WHERE id=?");
+$admin->execute([$did]);
+$admin = $admin->fetch();
 ?>
-<?= dosenHead('Profil Saya') ?>
-<?= dosenSidebar($cur) ?>
+<?= adminHead('Profil Saya') ?>
+<?= adminSidebar($cur) ?>
 <div class="main-content">
-<?= dosenTopbar('Profil Saya') ?>
+<?= adminTopbar('Profil Saya') ?>
 <div class="content-area">
 
 <?php if($msg): ?><div class="alert alert-success rounded-3 mb-3"><i class="bi bi-check-circle-fill me-2"></i><?=htmlspecialchars($msg)?></div><?php endif; ?>
@@ -68,33 +69,16 @@ $stat = $stat->fetch();
       <div style="width:80px;height:80px;background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2.2rem;color:#fff;">
         <i class="bi bi-person-fill"></i>
       </div>
-      <h5 class="fw-bold mb-1"><?=htmlspecialchars($dosen['nama'])?></h5>
+      <h5 class="fw-bold mb-1"><?=htmlspecialchars($admin['nama'])?></h5>
       <div class="text-muted mb-3" style="font-size:.85rem;">
-        <div><i class="bi bi-card-text me-1"></i>NIDN: <?=htmlspecialchars($dosen['nidn'])?></div>
-        <div><i class="bi bi-envelope me-1"></i><?=htmlspecialchars($dosen['email'])?></div>
-        <?php if($dosen['no_hp']): ?>
-        <div><i class="bi bi-phone me-1"></i><?=htmlspecialchars($dosen['no_hp'])?></div>
-        <?php endif; ?>
-      </div>
-      <div class="d-flex justify-content-around pt-3 border-top">
-        <div class="text-center">
-          <div class="fw-bold fs-4" style="color:#6366f1;"><?=$stat['total']?></div>
-          <div class="text-muted" style="font-size:.75rem;">Total</div>
-        </div>
-        <div class="text-center">
-          <div class="fw-bold fs-4 text-success"><?=$stat['disetujui']?></div>
-          <div class="text-muted" style="font-size:.75rem;">Disetujui</div>
-        </div>
-        <div class="text-center">
-          <div class="fw-bold fs-4 text-warning"><?=$stat['pending']?></div>
-          <div class="text-muted" style="font-size:.75rem;">Pending</div>
-        </div>
+        <div><i class="bi bi-card-text me-1"></i>Username: <?=htmlspecialchars($admin['username'])?></div>
+        <div><i class="bi bi-envelope me-1"></i><?=htmlspecialchars($admin['email'])?></div>
       </div>
     </div>
   </div>
 
   <div class="col-lg-8">
-    <!-- edit profil (dosen) -->
+    <!-- edit profil (admin) -->
     <div class="card mb-3">
       <div class="card-header"><h6 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Profil</h6></div>
       <div class="card-body p-4">
@@ -102,20 +86,16 @@ $stat = $stat->fetch();
           <input type="hidden" name="action" value="update_profil">
           <div class="row g-3">
             <div class="col-12">
-              <label class="form-label">NIDN</label>
-              <input type="text" class="form-control" value="<?=htmlspecialchars($dosen['nidn'])?>" readonly style="background:#f0f4f8;cursor:not-allowed;">
-            </div>
-            <div class="col-12">
               <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-              <input type="text" name="nama" class="form-control" value="<?=htmlspecialchars($dosen['nama'])?>" required>
+              <input type="text" name="nama" class="form-control" value="<?=htmlspecialchars($admin['nama'])?>" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Email</label>
-              <input type="email" class="form-control" value="<?=htmlspecialchars($dosen['email'])?>" readonly style="background:#f0f4f8;cursor:not-allowed;">
+              <input type="email" class="form-control" value="<?=htmlspecialchars($admin['email'])?>" readonly style="background:#f0f4f8;cursor:not-allowed;">
             </div>
             <div class="col-md-6">
-              <label class="form-label">No. HP</label>
-              <input type="text" name="no_hp" class="form-control" value="<?=htmlspecialchars($dosen['no_hp']??'')?>">
+              <label class="form-label">Username <span class="text-danger">*</span></label>
+              <input type="text" name="username" class="form-control" value="<?=htmlspecialchars($admin['username'])?>" required>
             </div>
             <div class="col-12">
               <button type="submit" class="btn btn-primary-custom"><i class="bi bi-save me-2"></i>Simpan Perubahan</button>
@@ -125,7 +105,7 @@ $stat = $stat->fetch();
       </div>
     </div>
 
-    <!-- ganti password (dosen) -->
+    <!-- ganti password (admin) -->
     <div class="card">
       <div class="card-header"><h6 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2 text-warning"></i>Ganti Password</h6></div>
       <div class="card-body p-4">
@@ -156,4 +136,4 @@ $stat = $stat->fetch();
 </div>
 </div>
 </div>
-<?= dosenFoot() ?>
+<?= adminFoot() ?>

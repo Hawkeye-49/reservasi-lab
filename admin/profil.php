@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hash = $row->fetchColumn();
         if (!$hash || !password_verify($lama, $hash)) {
             $err = 'Password lama salah.';
-        } elseif (strlen($baru) < 6) {
-            $err = 'Password baru minimal 6 karakter.';
+        } elseif (strlen($baru) < 8) {
+            $err = 'Password baru minimal 8 karakter.';
         } elseif ($baru !== $konfirm) {
             $err = 'Konfirmasi password tidak cocok.';
         } else {
@@ -118,7 +118,7 @@ $admin = $admin->fetch();
             </div>
             <div class="col-md-6">
               <label class="form-label">Password Baru <span class="text-danger">*</span></label>
-              <input type="password" name="password_baru" class="form-control" placeholder="Minimal 6 karakter" required>
+              <input type="password" name="password_baru" class="form-control" placeholder="Minimal 8 karakter" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>

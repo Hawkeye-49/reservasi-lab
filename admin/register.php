@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->fetch()) {
                 $err = 'Username sudah digunakan!';
             } else {
-                $hash = password_hash($p, PASSWORD_DEFAULT);
+                $hash = password_hash($p, PASSWORD_BCRYPT);
                 $stmt2 = $db->prepare('INSERT INTO admin (username, password, nama, email) VALUES (?,?,?,?)');
                 $stmt2->execute([$username, $hash, $nama, $email ?: null]);
 

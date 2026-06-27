@@ -31,8 +31,8 @@ $fk  = $_GET['kode']    ?? '';
         <input type="date" name="tanggal" class="form-control form-control-sm" value="<?=htmlspecialchars($ft)?>" onchange="this.form.submit()">
       </div>
       <div class="col-sm-4">
-        <label class="form-label">Cari Kode / Dosen</label>
-        <input type="text" name="kode" class="form-control form-control-sm" placeholder="Kode reservasi / nama dosen..." value="<?=htmlspecialchars($fk)?>">
+        <label class="form-label">Pencarian</label>
+        <input type="text" name="kode" class="form-control form-control-sm" placeholder="Masukkan keyword pencarian..." value="<?=htmlspecialchars($fk)?>">
       </div>
       <div class="col-sm-2 d-flex gap-1">
         <button type="submit" class="btn btn-sm btn-primary-custom flex-fill">Cari</button>
@@ -83,7 +83,7 @@ async function load(){
   const res=await fetch(url).then(r=>r.json());
   document.getElementById('totalBadge').textContent=res.total??0;
   let rows=res.data??[];
-  if(fk) rows=rows.filter(r=>r.kode_reservasi.toLowerCase().includes(fk.toLowerCase())||r.dosen.toLowerCase().includes(fk.toLowerCase()));
+  if(fk) rows=rows.filter(r=>r.kode_reservasi.toLowerCase().includes(fk.toLowerCase())||r.ruangan.toLowerCase().includes(fk.toLowerCase())||r.kelas.toLowerCase().includes(fk.toLowerCase())||r.matakuliah.toLowerCase().includes(fk.toLowerCase())||r.dosen.toLowerCase().includes(fk.toLowerCase()));
   const bmap={pending:'bg-warning text-dark',disetujui:'bg-success',ditolak:'bg-danger',dibatalkan:'bg-secondary'};
   document.getElementById('tbody').innerHTML=rows.length?rows.map(r=>`
     <tr>

@@ -32,7 +32,7 @@ $fs  = $_GET['status'] ?? '';
       <div class="ms-auto">
         <label class="form-label mb-1">Cari</label>
         <input type="text" id="searchInput" class="form-control form-control-sm"
-               placeholder="Kode / ruangan / mata kuliah..." style="width:220px;" oninput="render()">
+               placeholder="Masukkan keyword..." style="width:220px;" oninput="render()">
       </div>
     </div>
   </div>
@@ -109,6 +109,7 @@ function render() {
   if (activeFilter) rows = rows.filter(r => r.status === activeFilter);
   if (q) rows = rows.filter(r =>
     r.kode_reservasi.toLowerCase().includes(q) ||
+    r.kelas.toLowerCase().includes(q) ||
     r.ruangan.toLowerCase().includes(q) ||
     r.matakuliah.toLowerCase().includes(q)
   );

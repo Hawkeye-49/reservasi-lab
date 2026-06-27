@@ -39,7 +39,12 @@ requireAdmin(); $cur=basename(__FILE__);
 <?= adminFoot() ?>
 <script>
 const API='../api/master.php'; let allData=[];
-async function loadData(){ const res=await fetch(`${API}?action=matakuliah`).then(r=>r.json()); allData=res.data||[]; render(); }
+async function loadData(){ 
+  const res=await fetch(`${API}?action=matakuliah`).then(r=>r.json()); 
+  allData=res.data||[]; 
+  render(); 
+}
+
 function render(){
   const q=document.getElementById('search').value.toLowerCase();
   const rows=allData.filter(d=>!q||d.nama.toLowerCase().includes(q)||d.kode.toLowerCase().includes(q));
@@ -55,9 +60,42 @@ function render(){
       <button class="btn btn-danger btn-action" onclick="hapus(${d.id},'${d.nama.replace(/'/g,"\\'")}')"><i class="bi bi-trash"></i></button>
     </td></tr>`).join(''):'<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada data</td></tr>';
 }
-function openModal(){document.getElementById('fId').value='';document.getElementById('mTitle').textContent='Tambah Mata Kuliah';['fKode','fNama'].forEach(id=>document.getElementById(id).value='');document.getElementById('fSks').value=3;document.getElementById('fStatus').value='aktif';new bootstrap.Modal(document.getElementById('mForm')).show();}
-function edit(d){document.getElementById('fId').value=d.id;document.getElementById('mTitle').textContent='Edit Mata Kuliah';document.getElementById('fKode').value=d.kode;document.getElementById('fNama').value=d.nama;document.getElementById('fSks').value=d.sks;document.getElementById('fStatus').value=d.status;new bootstrap.Modal(document.getElementById('mForm')).show();}
-async function simpan(){const fd=new FormData();fd.append('id',document.getElementById('fId').value);fd.append('kode',document.getElementById('fKode').value);fd.append('nama',document.getElementById('fNama').value);fd.append('sks',document.getElementById('fSks').value);fd.append('status',document.getElementById('fStatus').value);const res=await fetch(`${API}?action=save_mk`,{method:'POST',body:fd}).then(r=>r.json());showToast(res.success?'success':'danger',res.message);if(res.success){bootstrap.Modal.getInstance(document.getElementById('mForm')).hide();loadData();}}
-async function hapus(id,nama){if(!confirm(`Hapus "${nama}"?`))return;const fd=new FormData();fd.append('id',id);const res=await fetch(`${API}?action=del_mk`,{method:'POST',body:fd}).then(r=>r.json());showToast(res.success?'success':'danger',res.message);if(res.success)loadData();}
+
+function openModal(){
+  document.getElementById('fId').value='';
+  document.getElementById('mTitle').textContent='Tambah Mata Kuliah';
+  ['fKode','fNama'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSks').value=3;
+  document.getElementById('fStatus').value='aktif';
+  new bootstrap.Modal(document.getElementById('mForm')).show();
+}
+
+function edit(d){
+  document.getElementById('fId').value=d.id;
+  document.getElementById('mTitle').textContent='Edit Mata Kuliah';
+  document.getElementById('fKode').value=d.kode;
+  document.getElementById('fNama').value=d.nama;
+  document.getElementById('fSks').value=d.sks;
+  document.getElementById('fStatus').value=d.status;
+  new bootstrap.Modal(document.getElementById('mForm')).show();
+}
+async function simpan(){
+  const fd=new FormData();
+  fd.append('id',document.getElementById('fId').value);
+  fd.append('kode',document.getElementById('fKode').value);
+  fd.append('nama',document.getElementById('fNama').value);
+  fd.append('sks',document.getElementById('fSks').value);
+  fd.append('status',document.getElementById('fStatus').value);
+  const res=await fetch(`${API}?action=save_mk`,{method:'POST',body:fd}).then(r=>r.json());
+  showToast(res.success?'success':'danger',res.message);if(res.success){bootstrap.Modal.getInstance(document.getElementById('mForm')).hide();
+  loadData();}
+}
+async function hapus(id,nama){
+  if(!confirm(`Hapus "${nama}"?`))return;
+  const fd=new FormData();fd.append('id',id);
+  const res=await fetch(`${API}?action=del_mk`,{method:'POST',body:fd}).then(r=>r.json());
+  showToast(res.success?'success':'danger',res.message);
+  if(res.success)loadData();
+}
 loadData();
 </script>

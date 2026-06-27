@@ -62,9 +62,40 @@ async function loadData(){
       </div>
     </div>`).join(''):'<div class="col-12 text-center py-4 text-muted">Tidak ada data</div>';
 }
-function openModal(){document.getElementById('fId').value='';document.getElementById('mTitle').textContent='Tambah Laboratorium';['fKode','fNama','fLok','fFas'].forEach(id=>document.getElementById(id).value='');document.getElementById('fKap').value=30;document.getElementById('fStatus').value='aktif';new bootstrap.Modal(document.getElementById('mForm')).show();}
-function edit(d){document.getElementById('fId').value=d.id;document.getElementById('mTitle').textContent='Edit Laboratorium';document.getElementById('fKode').value=d.kode;document.getElementById('fNama').value=d.nama;document.getElementById('fKap').value=d.kapasitas;document.getElementById('fLok').value=d.lokasi||'';document.getElementById('fFas').value=d.fasilitas||'';document.getElementById('fStatus').value=d.status;new bootstrap.Modal(document.getElementById('mForm')).show();}
-async function simpan(){const fd=new FormData();const fields={fId:'id',fKode:'kode',fNama:'nama',fKap:'kapasitas',fLok:'lokasi',fFas:'fasilitas',fStatus:'status'};Object.entries(fields).forEach(([id,name])=>fd.append(name,document.getElementById(id).value));const res=await fetch(`${API}?action=save_ruangan`,{method:'POST',body:fd}).then(r=>r.json());showToast(res.success?'success':'danger',res.message);if(res.success){bootstrap.Modal.getInstance(document.getElementById('mForm')).hide();loadData();}}
-async function hapus(id,nama){if(!confirm(`Hapus laboratorium "${nama}"?`))return;const fd=new FormData();fd.append('id',id);const res=await fetch(`${API}?action=del_ruangan`,{method:'POST',body:fd}).then(r=>r.json());showToast(res.success?'success':'danger',res.message);if(res.success)loadData();}
+function openModal(){
+  document.getElementById('fId').value='';
+  document.getElementById('mTitle').textContent='Tambah Laboratorium';
+  ['fKode','fNama','fLok','fFas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fKap').value=30;
+  document.getElementById('fStatus').value='aktif';
+  new bootstrap.Modal(document.getElementById('mForm')).show();
+}
+function edit(d){
+  document.getElementById('fId').value=d.id;
+  document.getElementById('mTitle').textContent='Edit Laboratorium';
+  document.getElementById('fKode').value=d.kode;
+  document.getElementById('fNama').value=d.nama;
+  document.getElementById('fKap').value=d.kapasitas;
+  document.getElementById('fLok').value=d.lokasi||'';
+  document.getElementById('fFas').value=d.fasilitas||'';
+  document.getElementById('fStatus').value=d.status;
+  new bootstrap.Modal(document.getElementById('mForm')).show();
+}
+async function simpan(){
+  const fd=new FormData();
+  const fields={fId:'id',fKode:'kode',fNama:'nama',fKap:'kapasitas',fLok:'lokasi',fFas:'fasilitas',fStatus:'status'};
+  Object.entries(fields).forEach(([id,name])=>fd.append(name,document.getElementById(id).value));
+  const res=await fetch(`${API}?action=save_ruangan`,{method:'POST',body:fd}).then(r=>r.json());
+  showToast(res.success?'success':'danger',res.message);
+  if(res.success){bootstrap.Modal.getInstance(document.getElementById('mForm')).hide();loadData();}
+}
+async function hapus(id,nama){
+  if(!confirm(`Hapus laboratorium "${nama}"?`))return;
+  const fd=new FormData();
+  fd.append('id',id);
+  const res=await fetch(`${API}?action=del_ruangan`,{method:'POST',body:fd}).then(r=>r.json());
+  showToast(res.success?'success':'danger',res.message);
+  if(res.success)loadData();
+}
 loadData();
 </script>

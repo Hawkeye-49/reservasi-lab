@@ -53,9 +53,45 @@ async function loadData(){
       <button class="btn btn-danger btn-action" onclick="hapus(${d.id},'${d.nama}')"><i class="bi bi-trash"></i></button>
     </td></tr>`).join(''):'<tr><td colspan="8" class="text-center py-4 text-muted">Tidak ada data</td></tr>';
 }
-function openModal(){document.getElementById('fId').value='';document.getElementById('mTitle').textContent='Tambah Kelas';['fNama','fTA'].forEach(id=>document.getElementById(id).value='');document.getElementById('fSem').value=1;document.getElementById('fKap').value=30;document.getElementById('fStatus').value='aktif';new bootstrap.Modal(document.getElementById('mForm')).show();}
-function edit(d){document.getElementById('fId').value=d.id;document.getElementById('mTitle').textContent='Edit Kelas';document.getElementById('fNama').value=d.nama;document.getElementById('fSem').value=d.semester;document.getElementById('fTA').value=d.tahun_ajaran||'';document.getElementById('fKap').value=d.kapasitas;document.getElementById('fStatus').value=d.status;new bootstrap.Modal(document.getElementById('mForm')).show();}
-async function simpan(){const fd=new FormData();fd.append('id',document.getElementById('fId').value);fd.append('nama',document.getElementById('fNama').value);fd.append('semester',document.getElementById('fSem').value);fd.append('tahun_ajaran',document.getElementById('fTA').value);fd.append('kapasitas',document.getElementById('fKap').value);fd.append('status',document.getElementById('fStatus').value);const res=await fetch(`${API}?action=save_kelas`,{method:'POST',body:fd}).then(r=>r.json());showToast(res.success?'success':'danger',res.message);if(res.success){bootstrap.Modal.getInstance(document.getElementById('mForm')).hide();loadData();}}
-async function hapus(id,nama){if(!confirm(`Hapus kelas "${nama}"?`))return;const fd=new FormData();fd.append('id',id);const res=await fetch(`${API}?action=del_kelas`,{method:'POST',body:fd}).then(r=>r.json());showToast(res.success?'success':'danger',res.message);if(res.success)loadData();}
+function openModal(){
+  document.getElementById('fId').value='';
+  document.getElementById('mTitle').textContent='Tambah Kelas';
+  ['fNama','fTA'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSem').value=1;
+  document.getElementById('fKap').value=30;
+  document.getElementById('fStatus').value='aktif';
+  new bootstrap.Modal(document.getElementById('mForm')).show();
+}
+function edit(d){
+  document.getElementById('fId').value=d.id;
+  document.getElementById('mTitle').textContent='Edit Kelas';
+  document.getElementById('fNama').value=d.nama;
+  document.getElementById('fSem').value=d.semester;
+  document.getElementById('fTA').value=d.tahun_ajaran||'';
+  document.getElementById('fKap').value=d.kapasitas;
+  document.getElementById('fStatus').value=d.status;
+  new bootstrap.Modal(document.getElementById('mForm')).show();
+}
+async function simpan(){
+  const fd=new FormData();
+  fd.append('id',document.getElementById('fId').value);
+  fd.append('nama',document.getElementById('fNama').value);
+  fd.append('semester',document.getElementById('fSem').value);
+  fd.append('tahun_ajaran',document.getElementById('fTA').value);
+  fd.append('kapasitas',document.getElementById('fKap').value);
+  fd.append('status',document.getElementById('fStatus').value);
+  const res=await fetch(`${API}?action=save_kelas`,{method:'POST',body:fd}).then(r=>r.json());
+  showToast(res.success?'success':'danger',res.message);
+  if(res.success){bootstrap.Modal.getInstance(document.getElementById('mForm')).hide();
+  loadData();}
+}
+async function hapus(id,nama){
+  if(!confirm(`Hapus kelas "${nama}"?`))return;
+  const fd=new FormData();
+  fd.append('id',id);
+  const res=await fetch(`${API}?action=del_kelas`,{method:'POST',body:fd}).then(r=>r.json());
+  showToast(res.success?'success':'danger',res.message);
+  if(res.success)loadData();
+}
 loadData();
 </script>

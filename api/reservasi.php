@@ -135,7 +135,7 @@ function laporan(PDO $db): void {
     jsonRes(true,'ok',['data'=>$data,'per_ruangan'=>$per_ruangan->fetchAll(),'per_dosen'=>$per_dosen->fetchAll()]);
 }
 
-// buat reservasi
+// buat reservasi (dosen)
 function buat(PDO $db): void {
     $in = json_decode(file_get_contents('php://input'),true) ?? $_POST;
     $did =(int)($in['dosen_id']??0);
@@ -172,7 +172,7 @@ function updateStatus(PDO $db): void {
     jsonRes(true,"Reservasi berhasil $status");
 }
 
-// batalkan reservasi (dosen)
+// batalkan reservasi (admin & dosen)
 function batalkan(PDO $db): void {
     $in = json_decode(file_get_contents('php://input'),true) ?? $_POST;
     $id = (int)($in['id']??0);

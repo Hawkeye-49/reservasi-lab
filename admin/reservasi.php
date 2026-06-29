@@ -100,8 +100,8 @@ async function load(){
           ${r.status==='pending'?`
             <button class="btn btn-success btn-action" onclick="ubahStatus(${r.id},'disetujui')" title="Setujui"><i class="bi bi-check"></i></button>
             <button class="btn btn-danger btn-action" onclick="ubahStatus(${r.id},'ditolak')" title="Tolak"><i class="bi bi-x"></i></button>`:''}
-          ${r.status==='disetujui'?`<button class="btn btn-secondary btn-action" onclick="ubahStatus(${r.id},'dibatalkan')" title="Batalkan"><i class="bi bi-slash-circle"></i></button>`:''}
-          <button class="btn btn-outline-secondary btn-action" onclick="showDetail(${r.id})" title="Detail"><i class="bi bi-eye"></i></button>
+            <button class="btn btn-outline-secondary btn-action" onclick="showDetail(${r.id})" title="Detail"><i class="bi bi-eye"></i></button>
+            ${r.status==='disetujui' && r.bisa_batalkan === true ?`<button class="btn btn-outline-danger btn-action" onclick="ubahStatus(${r.id},'dibatalkan')" title="Batalkan"><i class="bi bi-x-circle"></i></button>`:''}
         </div>
       </td>
     </tr>`).join(''):'<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data</td></tr>';
@@ -139,7 +139,14 @@ async function showDetail(id){
     <div class="d-flex gap-2 mt-3">
       <button class="btn btn-success flex-fill" onclick="ubahStatus(${d.id},'disetujui');bootstrap.Modal.getInstance(document.getElementById('mDetail')).hide()"><i class="bi bi-check-circle me-1"></i>Setujui</button>
       <button class="btn btn-danger flex-fill" onclick="ubahStatus(${d.id},'ditolak');bootstrap.Modal.getInstance(document.getElementById('mDetail')).hide()"><i class="bi bi-x-circle me-1"></i>Tolak</button>
+    </div>`:''}
+    ${d.status==='disetujui' && d.bisa_batalkan === true ?`
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-secondary flex-fill"
+              onclick="ubahStatus(${d.id},'dibatalkan');bootstrap.Modal.getInstance(document.getElementById('mDetail')).hide()">
+        <i class="bi bi-slash-circle me-1"></i>Batalkan
+      </button>
     </div>`:''}`;
-}
+    }
 load();
 </script>

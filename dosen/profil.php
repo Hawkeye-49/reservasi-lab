@@ -12,12 +12,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update_profil') {
         $nama = sanitize($_POST['nama'] ?? '');
         $hp   = sanitize($_POST['no_hp'] ?? '');
+        $email = sanitize($_POST['email'] ?? '');
         if (!$nama) { $err = 'Nama tidak boleh kosong.'; }
         else {
-            $db->prepare("UPDATE dosen SET nama=?, no_hp=? WHERE id=?")
-               ->execute([$nama, $hp, $did]);
-            $_SESSION['dosen_nama'] = $nama;
-            $msg = 'Profil berhasil diperbarui!';
+            if (!$email) { $err = 'Email tidak boleh kosong.'; }
+            if (!$err && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $err = 'Format email tidak valid.'; }
+            if (!$err) {
+                $stmt = $db->prepare("SELECT id FROM dosen WHERE email=? AND id<>?");
+                $stmt->execute([$email, $did]);
+                if ($stmt->fetch()) {
+                    $err = 'Email sudah digunakan oleh dosen lain.';
+                }
+            }
+            if (!$err) {
+                $db->prepare("UPDATE dosen SET nama=?, no_hp=?, email=? WHERE id=?")
+                   ->execute([$nama, $hp, $email, $did]);
+                $_SESSION['dosen_nama'] = $nama;
+                $msg = 'Profil berhasil diperbarui!';
+            }
         }
     } elseif ($action === 'ganti_password') {
         $lama = $_POST['password_lama'] ?? '';
@@ -110,8 +122,8 @@ $stat = $stat->fetch();
               <input type="text" name="nama" class="form-control" value="<?=htmlspecialchars($dosen['nama'])?>" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" value="<?=htmlspecialchars($dosen['email'])?>" readonly style="background:#f0f4f8;cursor:not-allowed;">
+              <label class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" name="email" class="form-control" value="<?=htmlspecialchars($dosen['email'])?>" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">No. HP</label>

@@ -22,7 +22,7 @@ function adminTopbar(string $title): string {
   </div>
   <div class="d-flex align-items-center gap-3">
     <a href="../index.php" target="_blank" class="btn btn-sm btn-outline-primary rounded-3 d-none d-md-inline-flex align-items-center gap-1">
-      <i class="bi bi-globe2"></i> Website</a>
+      <i class="bi bi-house-door-fill"></i> Home</a>
     <div class="text-end d-none d-md-block lh-1">
       <div style="font-size:.8rem;font-weight:700;color:#1a1a2e">'.$nama.'</div>
       <div style="font-size:.7rem;color:#6c757d">Administrator</div>

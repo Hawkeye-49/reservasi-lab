@@ -24,7 +24,7 @@ function baseQuery(): string {
             ru.nama ruangan,ru.kode kode_ruangan,ru.lokasi,ru.kapasitas,ru.fasilitas,
             mk.nama matakuliah,mk.kode kode_mk,mk.sks,
             kl.nama kelas,
-            sw.label jam,sw.sesi
+            sw.label jam,sw.sesi,sw.jam_mulai
             FROM reservasi r
             JOIN dosen d ON r.dosen_id=d.id
             JOIN ruangan ru ON r.ruangan_id=ru.id
@@ -32,6 +32,7 @@ function baseQuery(): string {
             JOIN kelas kl ON r.kelas_id=kl.id
             JOIN slot_waktu sw ON r.slot_waktu_id=sw.id";
 }
+
 
 // status slot, cek ketersediaan ruangan & tanggal
 function slotStatus(PDO $db): void {
@@ -88,10 +89,22 @@ function listReservasi(PDO $db): void {
 
     $stmt=$db->prepare(baseQuery()." $where ORDER BY r.created_at DESC LIMIT $limit OFFSET $offset");
     $stmt->execute($p);
+    $rows=$stmt->fetchAll();
+
+    $now=time();
+    foreach($rows as &$r){
+        $waktuMulai=strtotime($r['tanggal'].' '.$r['jam_mulai']);
+        $r['bisa_batalkan']=($waktuMulai - $now) >= 7200;
+        $r['expired']=!$r['bisa_batalkan'];
+        unset($r['jam_mulai']);
+    }
+    unset($r);
+
     $total=$db->prepare("SELECT COUNT(*) FROM reservasi r $where");
     $total->execute($p);
-    jsonRes(true,'ok',['data'=>$stmt->fetchAll(),'total'=>(int)$total->fetchColumn()]);
+    jsonRes(true,'ok',['data'=>$rows,'total'=>(int)$total->fetchColumn()]);
 }
+
 
 // detail reservasi
 function detail(PDO $db): void {
@@ -104,8 +117,16 @@ function detail(PDO $db): void {
     $stmt->execute([$val]);
     $row=$stmt->fetch();
     if(!$row) jsonRes(false,'Reservasi tidak ditemukan');
+
+    $waktuMulai=strtotime($row['tanggal'].' '.$row['jam_mulai']);
+    $now=time();
+    $row['bisa_batalkan']=($waktuMulai - $now) >= 7200;
+    $row['expired']=!$row['bisa_batalkan'];
+    unset($row['jam_mulai']);
+
     jsonRes(true,'ok',['data'=>$row]);
 }
+
 
 // statistik
 function statistik(PDO $db): void {
@@ -172,7 +193,7 @@ function updateStatus(PDO $db): void {
     jsonRes(true,"Reservasi berhasil $status");
 }
 
-// batalkan reservasi (admin & dosen)
+// batalkan reservasi (dosen)
 function batalkan(PDO $db): void {
     $in = json_decode(file_get_contents('php://input'),true) ?? $_POST;
     $id = (int)($in['id']??0);
@@ -187,8 +208,6 @@ function batalkan(PDO $db): void {
     $sw=$db->prepare("SELECT jam_mulai FROM slot_waktu WHERE id=?");
     $sw->execute([$r['slot_waktu_id']]);
     $slot=$sw->fetch();
-    $waktuMulai = strtotime($r['tanggal'].' '.$slot['jam_mulai']);
-    if($waktuMulai - time() < 7200 && !isAdmin()) jsonRes(false,'Pembatalan hanya bisa dilakukan minimal 2 jam sebelum sesi');
     $db->prepare("UPDATE reservasi SET status='dibatalkan',is_active=0 WHERE id=?")->execute([$id]);
     jsonRes(true,'Reservasi berhasil dibatalkan');
 }

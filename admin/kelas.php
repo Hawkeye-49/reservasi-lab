@@ -42,7 +42,7 @@ async function loadData(){
   const res=await fetch(`${API}?action=kelas`).then(r=>r.json());
   document.getElementById('tbody').innerHTML=(res.data||[]).length?(res.data||[]).map((d,i)=>`<tr>
     <td class="text-muted">${i+1}</td>
-    <td><span class="badge bg-primary fs-6">${d.nama}</span></td>
+    <td><span class="badge bg-primary fs-8">${d.nama}</span></td>
     <td>${d.jurusan}</td>
     <td>Semester ${d.semester}</td>
     <td>${d.tahun_ajaran||'-'}</td>

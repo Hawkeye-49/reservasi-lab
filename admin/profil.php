@@ -12,8 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update_profil') {
         $nama = sanitize($_POST['nama'] ?? '');
         $user = sanitize($_POST['username'] ?? '');
+        $email = sanitize($_POST['email'] ?? '');
         if (!$nama) { $err = 'Nama tidak boleh kosong.'; }
         if (!$user) { $err = 'Username tidak boleh kosong.'; }
+        if (!$email) { $err = 'Email tidak boleh kosong.'; }
+        if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $err = 'Format email tidak valid.'; }
         if (!$err) {
             $stmt = $db->prepare("SELECT id FROM admin WHERE username=? AND id<>?");
             $stmt->execute([$user, $did]);
@@ -22,8 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         if (!$err) {
-            $db->prepare("UPDATE admin SET nama=?, username=? WHERE id=?")
-               ->execute([$nama, $user, $did]);
+            $stmt = $db->prepare("SELECT id FROM admin WHERE email=? AND id<>?");
+            $stmt->execute([$email, $did]);
+            if ($stmt->fetch()) {
+                $err = 'Email sudah digunakan oleh admin lain.';
+            }
+        }
+        if (!$err) {
+            $db->prepare("UPDATE admin SET nama=?, username=?, email=? WHERE id=?")
+               ->execute([$nama, $user, $email, $did]);
             $_SESSION['admin_nama'] = $nama;
             $msg = 'Profil berhasil diperbarui!';
         }
@@ -66,7 +76,7 @@ $admin = $admin->fetch();
   <!-- profil card -->
   <div class="col-lg-4">
     <div class="card text-center p-4">
-      <div style="width:80px;height:80px;background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2.2rem;color:#fff;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--accent),#0099cc);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2.2rem;color:#fff;">
         <i class="bi bi-person-fill"></i>
       </div>
       <h5 class="fw-bold mb-1"><?=htmlspecialchars($admin['nama'])?></h5>
@@ -90,8 +100,8 @@ $admin = $admin->fetch();
               <input type="text" name="nama" class="form-control" value="<?=htmlspecialchars($admin['nama'])?>" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" value="<?=htmlspecialchars($admin['email'])?>" readonly style="background:#f0f4f8;cursor:not-allowed;">
+              <label class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" name="email" class="form-control" value="<?=htmlspecialchars($admin['email'])?>" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Username <span class="text-danger">*</span></label>

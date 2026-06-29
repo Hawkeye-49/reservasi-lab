@@ -111,11 +111,6 @@ foreach($cards as $c):?>
       <td style="font-size:.83rem;"><?=htmlspecialchars($r['ruangan'])?></td>
       <td style="font-size:.82rem;white-space:nowrap;"><?=formatTgl($r['tanggal'])?></td>
       <td><?=badgeStatus($r['status'])?></td>
-      <td>
-        <?php if(in_array($r['status'],['pending','disetujui'])): ?>
-        <button class="btn btn-outline-danger btn-action" onclick="batalkan(<?=$r['id']?>,'<?=addslashes($r['kode_reservasi'])?>')" title="Batalkan"><i class="bi bi-x-circle"></i></button>
-        <?php endif; ?>
-      </td>
     </tr>
     <?php endforeach; ?>
     <?php if(!$riwayat): ?><tr><td colspan="5" class="text-center py-3 text-muted">Belum ada reservasi</td></tr><?php endif; ?>
@@ -127,11 +122,3 @@ foreach($cards as $c):?>
 </div>
 </div></div>
 <?= dosenFoot() ?>
-<script>
-async function batalkan(id,kode){
-  if(!confirm(`Batalkan reservasi ${kode}?`)) return;
-  const r=await fetch('../api/reservasi.php?action=batal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,dosen_id:<?=$did?>})}).then(x=>x.json());
-  showToast(r.success?'success':'danger',r.message);
-  if(r.success) setTimeout(()=>location.reload(),800);
-}
-</script>

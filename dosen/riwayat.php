@@ -135,7 +135,7 @@ function render() {
       <td>
         <div class="d-flex gap-1">
           <button class="btn btn-outline-secondary btn-action" onclick="lihatDetail(${r.id})" title="Detail"><i class="bi bi-eye"></i></button>
-          ${['pending','disetujui'].includes(r.status)
+          ${['pending','disetujui'].includes(r.status) && r.bisa_batalkan === true
             ? `<button class="btn btn-outline-danger btn-action" onclick="batalkan(${r.id},'${r.kode_reservasi}')" title="Batalkan"><i class="bi bi-x-circle"></i></button>`
             : ''}
         </div>
@@ -187,7 +187,7 @@ async function lihatDetail(id) {
         </div>
       `).join('')}
     </div>
-    ${['pending','disetujui'].includes(d.status) ? `
+    ${['pending','disetujui'].includes(d.status) && d.bisa_batalkan === true ? `
     <button class="btn btn-outline-danger w-100 mt-3 rounded-3"
             onclick="batalkan(${d.id},'${d.kode_reservasi}');bootstrap.Modal.getInstance(document.getElementById('mDetail')).hide();">
       <i class="bi bi-x-circle me-2"></i>Batalkan Reservasi Ini
